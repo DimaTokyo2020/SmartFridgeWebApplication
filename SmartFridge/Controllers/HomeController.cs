@@ -1,37 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using SmartFridge.Models;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using SmartFridge.Models; // пространство имен моделей и контекста данных
 
 namespace SmartFridge.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private UsersContext db;
+        public HomeController(UsersContext context)
         {
-            _logger = logger;
+            db = context;
         }
-
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
+        {
+            return View(await db.Users.ToListAsync());
+        }
+        public IActionResult Create()
         {
             return View();
         }
-
-        public IActionResult Privacy()
+        [HttpPost]
+        public async Task<IActionResult> Create(User user)
         {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            db.Users.Add(user);
+            await db.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
     }
 }
