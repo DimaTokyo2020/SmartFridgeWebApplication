@@ -13,6 +13,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SmartFridge.Models;
+using SmartFridgeWebApllication.Service;
+
+
+using Microsoft.AspNetCore.Identity.UI.Services;
+
 
 namespace SmartFridge
 {
@@ -30,7 +35,7 @@ namespace SmartFridge
         {
             string connection = Configuration.GetConnectionString("DefaultConnection");
 
-            services.AddDbContext<UsersContext>(options =>
+            services.AddDbContext<DevicesContext>(options =>
                 options.UseSqlServer(connection));
             services.AddControllersWithViews();
 
@@ -42,7 +47,27 @@ namespace SmartFridge
             services.AddRazorPages();
 
             //automatic add migration!!!!
-            services.BuildServiceProvider().GetService<UsersContext>().Database.Migrate();
+            services.BuildServiceProvider().GetService<DevicesContext>().Database.Migrate();
+
+
+            //send confirmation email by SendGrid
+            services.AddTransient<IEmailSender, EmailSenderService>(options =>
+            {
+                var username = Configuration["SendGrid:Username"];
+                var apiKey = Configuration["SendGrid:ApiKey"];
+
+                return new EmailSenderService(username, apiKey);
+            });
+
+            
+            services.AddAuthentication()
+                .AddGoogle(option =>
+                {
+                    option.ClientId = Configuration["GoogleLoginClient:ClientId"];
+                    option.ClientSecret = Configuration["GoogleLogInClient:ClientSecret"];
+
+                });
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,9 +96,13 @@ namespace SmartFridge
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Entry}/{id?}");
                 endpoints.MapRazorPages();
             });
         }
     }
 }
+
+
+
+

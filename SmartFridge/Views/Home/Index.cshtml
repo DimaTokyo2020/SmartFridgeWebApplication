@@ -1,12 +1,59 @@
-﻿@model IEnumerable<SmartFridge.Models.User>
+﻿@using SmartFridge.Models
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 @{
-    ViewBag.Title = "Все пользователи";
+    ViewData["Title"] = "Home Page";
 }
-<a asp-action="Create">Добавить пользователя</a>
+@model IEnumerable<Product>
+
+<h1>All Devices Products</h1>
 <table class="table">
-    <tr><td>Имя</td><td>Возраст</td></tr>
-    @foreach (var item in Model)
-    {
-        <tr><td>@item.Name</td><td>@item.Age</td></tr>
+    <tr>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
+                Products
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewBag.CountSort">
+                Count
+            </a>
+        </th>
+    </tr>
+
+    @{
+        var isDeviceEmpty = true;
+        foreach (Product u in Model)
+        {
+
+
+            if (u.Device.UserRosbery == @User.Identity.Name)
+            {
+                isDeviceEmpty = false;
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => u.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => u.Count)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = u.Id }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = u.Id })
+                    </td>
+                </tr>
+
+            }
+        }
+        if (isDeviceEmpty == true) { 
+            <h3> To start tracking products you must to insert them first to the fridge and then please refresh the page</h3>
+        }
+
     }
+
+    
+
+
+
 </table>

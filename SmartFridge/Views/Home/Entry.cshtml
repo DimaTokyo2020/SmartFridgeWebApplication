@@ -1,0 +1,22 @@
+﻿
+
+
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+
+
+@if (SignInManager.IsSignedIn(User))
+{
+
+    <h1>Wellcom: @User.Identity.Name</h1>
+    <h3>Now you can go to the device page and see yours product stock</h3>
+}
+else
+{
+    <h1>Wellcom to SmartFridge Website</h1>
+    <h3>Please log in to receive specific information from yours device</h3>
+
+}
+
