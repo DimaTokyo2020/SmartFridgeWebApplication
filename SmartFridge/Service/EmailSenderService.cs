@@ -28,7 +28,7 @@ namespace SmartFridgeWebApllication.Service
             var client = new SendGridClient(_apikey);
             var message = new SendGridMessage
             {//this is the email that the new client get for autorization email
-                From = new EmailAddress("dima.logven@gmail.com", _username),
+                From = new EmailAddress("colmansmartfridge@gmail.com", _username),
                 Subject = subject,
                 HtmlContent = htmlMessage
             };
